@@ -2,80 +2,162 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Confluence Score – FZFX</title>
+  <title>FZFX Confluence App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
     body {
       min-height: 100vh;
       background: radial-gradient(circle at top, #1b2a3a 0, #050810 55%, #020308 100%);
       color: #e8f5ff;
-      display: flex; justify-content: center; align-items: center; padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
     }
     .app {
-      width: 100%; max-width: 900px; background: rgba(3,10,20,0.96);
-      border-radius: 20px; padding: 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.8);
-      border: 1px solid rgba(120,220,255,0.15); backdrop-filter: blur(16px);
+      width: 100%;
+      max-width: 980px;
+      background: rgba(3,10,20,0.96);
+      border-radius: 20px;
+      padding: 20px 20px 24px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.8);
+      border: 1px solid rgba(120,220,255,0.15);
+      backdrop-filter: blur(16px);
     }
-    .header { text-align: center; margin-bottom: 20px; }
-    .title { font-size: 24px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #b2f5ff; }
-    .subtitle { font-size: 13px; color: #7ea0c0; }
+    .header { margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .title { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #b2f5ff; }
+    .subtitle { font-size: 12px; color: #7ea0c0; margin-top: 2px; }
+    .tabs { display: flex; border-radius: 999px; background: #050b15; border: 1px solid rgba(120,220,255,0.18); overflow: hidden; }
+    .tab-btn { flex: 1; padding: 6px 14px; font-size: 12px; text-align: center; cursor: pointer; border: none; background: transparent; color: #7ea0c0; }
+    .tab-btn.active { background: radial-gradient(circle at top, #1e384c, #07121f); color: #e8f5ff; font-weight: 600; }
+
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-top: 18px; }
-    .card {
-      background: radial-gradient(circle at top left, #172438 0, #050914 60%);
-      border-radius: 14px; padding: 14px; border: 1px solid rgba(120,220,255,0.18);
-      display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden;
-    }
-    .card.active::before {
-      content: ""; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(0,255,200,0.06), transparent);
-      opacity: 1;
-    }
+    .card { background: radial-gradient(circle at top left, #172438 0, #050914 60%); border-radius: 14px; padding: 14px; border: 1px solid rgba(120,220,255,0.18); display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+    .card.active::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,255,200,0.06), transparent); pointer-events: none; }
     .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #8fb4d8; }
-    .card-value { font-size: 24px; font-weight: 700; color: #7cf7c4; }
-    .card-footer { display: flex; justify-content: space-between; margin-top: 4px; }
+    .card-value { font-size: 22px; font-weight: 700; color: #7cf7c4; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
     .card-helper { font-size: 10px; color: #58708f; max-width: 60%; }
+
     .toggle-wrapper { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: #7ea0c0; }
     .switch { position: relative; width: 40px; height: 20px; }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; inset: 0; border-radius: 20px; cursor: pointer;
-      background-color: #222b3a; border: 1px solid #32425a; transition: 0.2s;
-    }
-    .slider:before {
-      content: ""; position: absolute; width: 14px; height: 14px; left: 2px; bottom: 2px;
-      background: #b0c7ff; border-radius: 50%; transition: 0.2s; box-shadow: 0 0 10px #b0c7ff88;
-    }
-    .switch input:checked + .slider {
-      background: linear-gradient(90deg, #11c5a5, #46ff88); border-color: #3ae6b0;
-    }
-    .switch input:checked + .slider:before {
-      transform: translateX(18px); background: #021312; box-shadow: 0 0 12px #46ff8888;
-    }
-    .total-section { margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(120,220,255,0.2); text-align: center; }
-    .total-label { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #7ea0c0; }
-    .total-value { font-size: 40px; font-weight: 800; color: #b2ffe4; }
+    .slider { position: absolute; inset: 0; border-radius: 20px; cursor: pointer; background-color: #222b3a; border: 1px solid #32425a; transition: 0.2s; }
+    .slider:before { content: ""; position: absolute; width: 14px; height: 14px; left: 2px; bottom: 2px; background: #b0c7ff; border-radius: 50%; transition: 0.2s; box-shadow: 0 0 10px #b0c7ff88; }
+    .switch input:checked + .slider { background: linear-gradient(90deg,#11c5a5,#46ff88); border-color:#3ae6b0; }
+    .switch input:checked + .slider:before { transform: translateX(18px); background:#021312; box-shadow:0 0 12px #46ff8888; }
+
+    .total-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(120,220,255,0.2); text-align: center; }
+    .total-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7ea0c0; }
+    .total-value { font-size: 34px; font-weight: 800; color: #b2ffe4; margin-top: 2px;}
     .badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; display: inline-block; margin-top: 6px; }
-    .badge.low { background: #ff57571f; color: #ff8b8b; border: 1px solid #ff575766; }
-    .badge.medium { background: #ffc14f1f; color: #ffd68b; border: 1px solid #ffc14f66; }
-    .badge.high { background: #4cd1951f; color: #9dffd4; border: 1px solid #4cd19566; }
-    .badge.aplus { background: linear-gradient(90deg,#40e0d022,#00ff9922); color: #e5fff7; border: 1px solid #00ff99aa; }
+    .badge.low { background:#ff57571f; color:#ff8b8b; border:1px solid #ff575766; }
+    .badge.medium { background:#ffc14f1f; color:#ffd68b; border:1px solid #ffc14f66; }
+    .badge.high { background:#4cd1951f; color:#9dffd4; border:1px solid #4cd19566; }
+    .badge.aplus { background:linear-gradient(90deg,#40e0d022,#00ff9922); color:#e5fff7; border:1px solid #00ff99aa; }
+    .total-caption { font-size: 11px; color: #647da0; margin-top: 4px; }
+
+    .notes-section { margin-top: 18px; display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1.2fr); gap: 16px; }
+    .fieldset { background: radial-gradient(circle at top left,#111b28 0,#050914 70%); border-radius: 14px; border: 1px solid rgba(120,220,255,0.18); padding: 12px 14px 14px; }
+    .fieldset-title { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #8fb4d8; margin-bottom: 6px; }
+    label.small-label { font-size: 11px; color: #7ea0c0; display:block; margin-bottom: 4px; }
+    input.text-input, textarea.textarea {
+      width: 100%; border-radius: 10px; border: 1px solid #253347;
+      background: #050b15; color: #e8f5ff; font-size: 12px;
+      padding: 8px 10px; outline: none; resize: vertical; min-height: 40px;
+    }
+    textarea.textarea { min-height: 80px; }
+    input.text-input:focus, textarea.textarea:focus { border-color: #49e0b7; box-shadow: 0 0 0 1px #49e0b733; }
+    .save-btn {
+      margin-top: 10px; width: 100%; border-radius: 999px; border: none;
+      padding: 9px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+      background: linear-gradient(90deg,#11c5a5,#46ff88); color: #021110;
+      box-shadow: 0 8px 22px rgba(0,255,153,0.35);
+    }
+    .save-btn:active { transform: translateY(1px); box-shadow: 0 4px 10px rgba(0,255,153,0.25); }
+    .hint { font-size: 10px; color: #5c7c9c; margin-top: 4px; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .history-header { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .stats { display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; color: #9fb7d8; }
+    .stat-pill { padding: 4px 8px; border-radius: 999px; background: #081320; border: 1px solid rgba(120,220,255,0.2); }
+    .clear-btn { border-radius: 999px; border: 1px solid rgba(255,87,87,0.6); background: rgba(255,87,87,0.16); color: #ffaaaa; font-size: 11px; padding: 4px 10px; cursor: pointer; }
+
+    .history-list { margin-top: 14px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
+    .history-item {
+      border-radius: 12px; border: 1px solid rgba(120,220,255,0.18);
+      background: radial-gradient(circle at top left,#101827 0,#050914 70%);
+      padding: 10px 12px; font-size: 11px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;
+    }
+    .history-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pair { font-weight: 600; color: #e8f5ff; }
+    .score-tag { font-size: 11px; }
+    .score-tag span { font-weight: 700; }
+    .date { color: #7ea0c0; font-size: 10px; }
+    .notes-preview { color: #9fb7d8; font-size: 11px; }
+    .notes-preview strong { color: #c6e2ff; }
+
+    @media (max-width: 720px) {
+      .notes-section { grid-template-columns: 1fr; }
+      body { padding: 14px; }
+      .app { padding: 16px 14px 18px; }
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="header">
-      <div class="title">Confluence Summary</div>
-      <div class="subtitle">Checklist de confluência – FZFX Trade Validator</div>
+      <div>
+        <div class="title">Confluence Summary</div>
+        <div class="subtitle">Checklist + Diário de Setup – FZFX Trade Validator</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="checklist">Checklist</button>
+        <button class="tab-btn" data-tab="history">Histórico</button>
+      </div>
     </div>
 
-    <div class="grid" id="cards-container"></div>
+    <div id="panel-checklist" class="tab-panel active">
+      <div class="grid" id="cards-container"></div>
 
-    <div class="total-section">
-      <div class="total-label">Total Overall Score</div>
-      <div id="totalScore" class="total-value">0%</div>
-      <div id="badge" class="badge low">Low Confluence</div>
-      <div id="caption" class="total-caption">Marque as confluências presentes neste trade.</div>
+      <div class="total-section">
+        <div class="total-label">Total Overall Score</div>
+        <div id="totalScore" class="total-value">0%</div>
+        <div id="badge" class="badge low">Low Confluence</div>
+        <div id="caption" class="total-caption">Marque as confluências presentes neste trade.</div>
+      </div>
+
+      <div class="notes-section">
+        <div class="fieldset">
+          <div class="fieldset-title">Plano do trade</div>
+          <label class="small-label" for="pairInput">Par / Activo</label>
+          <input id="pairInput" class="text-input" placeholder="Ex: XAUUSD, NAS100, EURUSD..." />
+          <label class="small-label" for="notesInput" style="margin-top:6px;">Notas rápidas</label>
+          <textarea id="notesInput" class="textarea" placeholder="Por que este trade faz sentido? Estrutura, contexto, sessão, notícias..."></textarea>
+          <div class="hint">Essas notas vão aparecer no histórico para rever depois.</div>
+        </div>
+
+        <div class="fieldset">
+          <div class="fieldset-title">Risco & Gestão</div>
+          <label class="small-label" for="riskInput">Risco aproximado (em R ou %)</label>
+          <input id="riskInput" class="text-input" placeholder="Ex: 0.5R, 1R, 0.25%..." />
+          <label class="small-label" for="sessionInput" style="margin-top:6px;">Sessão / Horário</label>
+          <input id="sessionInput" class="text-input" placeholder="Londres, NY, Ouro 9h30 NY..." />
+          <button id="saveBtn" class="save-btn">Salvar setup neste estado</button>
+          <div class="hint">O app salva localmente no teu dispositivo (localStorage). Podes limpar tudo no separador de Histórico.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-history" class="tab-panel">
+      <div class="history-header">
+        <div class="stats" id="stats"></div>
+        <button id="clearHistoryBtn" class="clear-btn">Limpar histórico</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
     </div>
   </div>
 
@@ -84,7 +166,6 @@ const confluences = [
   { id: "weekly", label: "WEEKLY", weight: 10, helper: "Tendência semanal alinhada" },
   { id: "daily",  label: "DAILY",  weight: 10, helper: "Tendência diária alinhada" },
   { id: "h4",     label: "4H",     weight: 10, helper: "Tendência 4H alinhada" },
-
   { id: "aoi",    label: "AOI", weight: 20, helper: "Zona de interesse forte" },
   { id: "bos",    label: "BOS / SHIFT", weight: 15, helper: "Quebra de estrutura a favor" },
   { id: "fibo",   label: "FIBO 62%", weight: 10, helper: "Retracção prime zone" },
@@ -100,13 +181,20 @@ const container = document.getElementById("cards-container");
 const totalScoreEl = document.getElementById("totalScore");
 const badgeEl = document.getElementById("badge");
 const captionEl = document.getElementById("caption");
+const pairInput = document.getElementById("pairInput");
+const notesInput = document.getElementById("notesInput");
+const riskInput = document.getElementById("riskInput");
+const sessionInput = document.getElementById("sessionInput");
+const saveBtn = document.getElementById("saveBtn");
+const historyList = document.getElementById("historyList");
+const statsEl = document.getElementById("stats");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
 function renderCards() {
   confluences.forEach(conf => {
     const card = document.createElement("div");
     card.className = "card";
-    card.id = `card-${conf.id}`;
-
+    card.id = "card-" + conf.id;
     card.innerHTML = `
       <div class="card-label">${conf.label}</div>
       <div class="card-value">${conf.weight}%</div>
@@ -119,14 +207,10 @@ function renderCards() {
             <span class="slider"></span>
           </div>
         </label>
-      </div>
-    `;
-
+      </div>`;
     container.appendChild(card);
-
     const checkbox = card.querySelector("input");
     const toggleText = card.querySelector(".toggle-wrapper span");
-
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) {
         card.classList.add("active");
@@ -140,46 +224,141 @@ function renderCards() {
   });
 }
 
-function updateTotal() {
+function calculateTotal() {
   let total = 0;
+  const activeIds = [];
   confluences.forEach(conf => {
     const cb = document.getElementById(conf.id);
-    if (cb && cb.checked) total += conf.weight;
+    if (cb && cb.checked) {
+      total += conf.weight;
+      activeIds.push(conf.id);
+    }
   });
+  return { total, activeIds };
+}
 
+function describeLevel(total) {
+  if (total === 0) return { level: "No Confluence", caption: "Nenhuma confluência marcada – fique fora.", badgeClass: "low" };
+  if (total <= 40) return { level: "Low Confluence", caption: "Setup fraco.", badgeClass: "low" };
+  if (total <= 80) return { level: "Medium Confluence", caption: "Setup ok.", badgeClass: "medium" };
+  if (total <= 100) return { level: "High Confluence", caption: "Setup forte.", badgeClass: "high" };
+  return { level: "A+ Setup", caption: "Trade raro e poderoso.", badgeClass: "aplus" };
+}
+
+function updateTotal() {
+  const { total } = calculateTotal();
   totalScoreEl.textContent = total + "%";
+  const info = describeLevel(total);
+  badgeEl.textContent = info.level;
+  badgeEl.className = "badge " + info.badgeClass;
+  captionEl.textContent = info.caption;
+}
 
-  let level, caption, badgeClass;
-  if (total === 0) {
-    level = "No Confluence";
-    caption = "Nenhuma confluência marcada – fique fora.";
-    badgeClass = "low";
-  } else if (total <= 40) {
-    level = "Low Confluence";
-    caption = "Setup fraco.";
-    badgeClass = "low";
-  } else if (total <= 80) {
-    level = "Medium Confluence";
-    caption = "Setup ok.";
-    badgeClass = "medium";
-  } else if (total <= 100) {
-    level = "High Confluence";
-    caption = "Setup forte.";
-    badgeClass = "high";
+function getHistory() {
+  try {
+    const raw = localStorage.getItem("fzfx_trades");
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+function saveHistory(list) {
+  try { localStorage.setItem("fzfx_trades", JSON.stringify(list)); } catch(e){}
+}
+
+function renderHistory() {
+  const history = getHistory().sort((a,b)=> b.timestamp - a.timestamp);
+  historyList.innerHTML = "";
+  if (!history.length) {
+    historyList.innerHTML = "<div class='hint' style='margin-top:8px;'>Ainda não há setups salvos. Volta ao checklist, monta a confluência e clica em “Salvar setup neste estado”.</div>";
   } else {
-    level = "A+ Setup";
-    caption = "Trade raro e poderoso.";
-    badgeClass = "aplus";
+    history.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "history-item";
+      const date = new Date(item.timestamp);
+      const dateStr = date.toLocaleString("pt-PT", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+      const info = describeLevel(item.score);
+      const notesShort = (item.notes || "").trim();
+      const preview = notesShort ? notesShort.slice(0, 140) + (notesShort.length > 140 ? "..." : "") : "Sem notas.";
+      div.innerHTML = `
+        <div class="history-top">
+          <div>
+            <div class="pair">${item.pair || "Sem par definido"}</div>
+            <div class="date">${dateStr} • ${item.session || "Sessão não definida"}</div>
+          </div>
+          <div class="score-tag"><span>${item.score}%</span> • ${info.level}</div>
+        </div>
+        <div class="notes-preview"><strong>Notas:</strong> ${preview}</div>
+        <div class="notes-preview"><strong>Confluências:</strong> ${item.activeConfluences.join(", ") || "Nenhuma"}</div>`;
+      historyList.appendChild(div);
+    });
   }
 
-  badgeEl.textContent = level;
-  badgeEl.className = "badge " + badgeClass;
-  captionEl.textContent = caption;
+  const total = history.length;
+  let low=0, med=0, high=0, aplus=0;
+  history.forEach(h => {
+    const info = describeLevel(h.score);
+    if (info.level === "Low Confluence") low++;
+    else if (info.level === "Medium Confluence") med++;
+    else if (info.level === "High Confluence") high++;
+    else if (info.level === "A+ Setup") aplus++;
+  });
+  const avg = total ? Math.round(history.reduce((s,h)=>s+h.score,0)/total) : 0;
+  statsEl.innerHTML = `
+    <div class="stat-pill">Total setups: ${total}</div>
+    <div class="stat-pill">Média score: ${avg}%</div>
+    <div class="stat-pill">Low: ${low}</div>
+    <div class="stat-pill">Medium: ${med}</div>
+    <div class="stat-pill">High: ${high}</div>
+    <div class="stat-pill">A+: ${aplus}</div>`;
 }
+
+saveBtn.addEventListener("click", () => {
+  const { total, activeIds } = calculateTotal();
+  const info = describeLevel(total);
+  if (total === 0 && !confirm("Score 0%. Tens a certeza que queres salvar mesmo assim?")) return;
+  const history = getHistory();
+  const item = {
+    timestamp: Date.now(),
+    pair: (pairInput.value || "").trim(),
+    notes: (notesInput.value || "").trim(),
+    risk: (riskInput.value || "").trim(),
+    session: (sessionInput.value || "").trim(),
+    score: total,
+    level: info.level,
+    activeConfluences: activeIds.map(id => {
+      const c = confluences.find(x=>x.id===id);
+      return c ? c.label : id;
+    })
+  };
+  history.push(item);
+  saveHistory(history);
+  renderHistory();
+  saveBtn.textContent = "Salvo ✅";
+  setTimeout(()=> saveBtn.textContent = "Salvar setup neste estado", 1200);
+});
+
+clearHistoryBtn.addEventListener("click", () => {
+  if (confirm("Tem a certeza que deseja apagar TODO o histórico de setups?")) {
+    saveHistory([]);
+    renderHistory();
+  }
+});
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const tab = btn.dataset.tab;
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    document.getElementById("panel-" + tab).classList.add("active");
+    if (tab === "history") renderHistory();
+  });
+});
 
 renderCards();
 updateTotal();
+renderHistory();
 </script>
-
 </body>
 </html>
